@@ -1,0 +1,15 @@
+Affichage d’une fenêtre et de pixels.
+
+Projection et affichage d’un triangle.
+
+Création d’un cube avec transformations.
+
+Ajout de la caméra et projection.
+
+Éclairage simple.
+
+Chargement de modèles.
+
+Ajout des textures.
+
+Optimisations et effets avancés.

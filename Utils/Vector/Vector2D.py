@@ -106,3 +106,6 @@ class Vector2D:
     
     def to_array(self):
         return np.array([self.x,self.y])
+    
+    def from_list(list):
+        return Vector2D(list[0],list[1])

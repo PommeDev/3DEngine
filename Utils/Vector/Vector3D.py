@@ -57,7 +57,7 @@ class Vector3D:
     def __itruediv__(self,other):
         self.x /= other
         self.y /= other
-        self.y /= other
+        self.z /= other
         return self
 
 
@@ -89,7 +89,7 @@ class Vector3D:
         return f"({self.x}, {self.y}, {self.z})"
     
     def __repr__(self):
-        return f"({self.x}, {self.y})"
+        return f"({self.x}, {self.y},{self.z})"
     
     def norme(self):
         return math.sqrt(self.x**2+self.y**2+self.z**2)
@@ -117,3 +117,6 @@ class Vector3D:
     
     def to_array(self):
         return np.array([self.x,self.y,self.z])
+    
+    def from_list(list):
+        return Vector3D(list[0],list[1],list[2])

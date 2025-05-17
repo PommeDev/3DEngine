@@ -3,8 +3,13 @@ import Utils.Image.Tampon as T
 from Utils.Vector.Vector3D import Vector3D
 from Utils.Vector.Vector2D import Vector2D
 from Utils.Image.Perspective import *
+from Utils.Figure.Cube import Cube
+from Utils.Figure.Shape import Shape
+from Utils.Figure.Triangle import Triangle
 
 class Moteur:
+    #Probleme les x et y sont inversé partout
+
     def __init__(self,size=(800,600)):
         self.size = size
         self.window = p.display.set_mode(size)
@@ -20,28 +25,17 @@ class Moteur:
         self.scroll_dir = 0
 
 
-
-        P1 = Vector3D(100,100,10)
-        P2 = Vector3D(200,100,10)
-        P3 = Vector3D(100,200,10)
-        P4 = Vector3D(200,200,10)
-        P5 = Vector3D(100,100,110)
-        P6 = Vector3D(200,100,110)
-        P7 = Vector3D(100,200,110)
-        P8 = Vector3D(200,200,110)
-        
+        self.C1 = Cube(Vector3D(100,100,0),100)
+        self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
 
 
-        self.p1 = perspective_compute(P1.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p2 = perspective_compute(P2.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p3 = perspective_compute(P3.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p4 = perspective_compute(P4.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p5 = perspective_compute(P5.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p6 = perspective_compute(P6.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p7 = perspective_compute(P7.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p8 = perspective_compute(P8.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
+        self.C2 = Cube(Vector3D(100,200,0),100)
+        self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
 
-        print(self.p1,self.p2,self.p3,self.p4,self.p5,self.p6,self.p7,self.p8)
+
+        self.S1 = Shape(self.C1.to_triangle())
+        self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
+
         #self.tampon.tampon_b[p1_2[0], p1_2[1]] = 255
         #self.tampon.tampon_b[p2_2[0], p2_2[1]] = 255
         #self.tampon.tampon_b[p3_2[0], p3_2[1]] = 255
@@ -58,7 +52,7 @@ class Moteur:
         pressed = p.key.get_pressed()
         
         if pressed[p.K_UP]:
-            print("aa")
+            
             self.camera[0] -= speed*self.dt
         
         if pressed[p.K_DOWN]:
@@ -98,27 +92,6 @@ class Moteur:
             
 
 
-
-    def compute_points(self):
-        P1 = Vector3D(100,100,10)
-        P2 = Vector3D(200,100,10)
-        P3 = Vector3D(100,200,10)
-        P4 = Vector3D(200,200,10)
-        P5 = Vector3D(100,100,110)
-        P6 = Vector3D(200,100,110)
-        P7 = Vector3D(100,200,110)
-        P8 = Vector3D(200,200,110)
-        
-        self.p1 = perspective_compute(P1.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p2 = perspective_compute(P2.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p3 = perspective_compute(P3.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p4 = perspective_compute(P4.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p5 = perspective_compute(P5.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p6 = perspective_compute(P6.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p7 = perspective_compute(P7.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        self.p8 = perspective_compute(P8.to_array(),self.camera.to_array(),self.orientation_c.to_array(),e(self.FOV))
-        
-
     def run(self):
         p.init()
         is_running = True
@@ -144,36 +117,17 @@ class Moteur:
             self.window.fill((0,0,0))
 
             if not(self.old_cam_pos == self.camera):
-                
-                self.compute_points()
-            
+                self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
+
             if not(self.old_cam_angle == self.orientation_c):
-                self.compute_points()
+                self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
 
             if self.tampon.indice != self.last_indice:
                 self.last_indice = self.tampon.blit(self.window)
 
             self.scroll_dir = 0
 
-            "Arriere"
-            p.draw.line(self.window,"blue",self.p5,self.p6)
-            p.draw.line(self.window,"blue",self.p5,self.p7)
-            p.draw.line(self.window,"blue",self.p6,self.p8)
-            p.draw.line(self.window,"blue",self.p7,self.p8)
-            "Coté"
-            p.draw.line(self.window,"green",self.p1,self.p5)
-            p.draw.line(self.window,"green",self.p3,self.p7)
-            p.draw.line(self.window,"green",self.p4,self.p8)
-            p.draw.line(self.window,"green",self.p2,self.p6)
-
-            
-            "Avant"
-            p.draw.line(self.window,"red",self.p1,self.p2)
-            p.draw.line(self.window,"red",self.p1,self.p3)
-            p.draw.line(self.window,"red",self.p2,self.p4)
-            p.draw.line(self.window,"red",self.p3,self.p4)
-
-
+            self.S1.draw(self.window,self.camera,self.orientation_c)
 
             p.display.flip()
             p.time.Clock().tick(60)

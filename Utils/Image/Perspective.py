@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def perspective_compute(a,c,theta,e):
     """
     a -> position de l'objet
@@ -59,3 +60,52 @@ def e(FOV):
     e[2] = e_z
     return e
 
+
+def to_display(triangle,camera_pos,theta):
+    #changer pour du Z-order :)
+    display = True
+    x0 = triangle.P2D[0][0]
+    y0 = triangle.P2D[0][1]
+    x1 = triangle.P2D[1][0]
+    y1 = triangle.P2D[1][1]
+    x2 = triangle.P2D[2][0]
+    y2 = triangle.P2D[2][1]
+
+
+
+    m1 = np.zeros((3,3))
+    m1[0,0] = 1
+    m1[1,1] = np.cos(theta[0])
+    m1[1,2] = np.sin(theta[0])
+    m1[2,1] = -np.sin(theta[0])
+    m1[2,2] = np.cos(theta[0])
+
+    m2 = np.zeros((3,3))
+    m2[0,0] = np.cos(theta[1])
+    m2[0,2] = -np.sin(theta[1])
+    m2[1,1] = 1
+    m2[2,0] = np.sin(theta[1])
+    m2[2,2] = np.cos(theta[1])
+
+    m3 = np.zeros((3,3))
+    m3[0,0] = np.cos(theta[2])
+    m3[0,1] = np.sin(theta[2])
+    m3[1,0] = -np.sin(theta[2])
+    m3[1,2] = np.cos(theta[2])
+    m3[2,2] = 1
+
+
+
+    view = ((m1@m2)@m3)
+
+    V0 = triangle.P1.to_array() @ view
+    V1 = triangle.P2.to_array() @ view
+    V2 = triangle.P3.to_array() @ view
+    
+    N = np.cross((V2 - V0),(V1 - V0))
+    L = np.array([0, 0, 1])
+    display = N.dot(L) >= 0
+
+
+
+    return display

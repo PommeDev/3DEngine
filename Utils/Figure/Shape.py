@@ -15,6 +15,8 @@ class Shape:
         c = ["blue","blue","red","red","green","green","white","white","cyan","cyan","yellow","yellow"]
         j = 0
         for i in self.triangles:
-            if to_display(i,camera,theta):
-                i.draw_full(window,c[j])
+            if i.should_draw_2(camera,theta):
+                i.draw_empty(window,c[j])
             j+= 1
+        
+

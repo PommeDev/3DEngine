@@ -64,6 +64,10 @@ class Vector3D:
     def __matmul__(self,other):
         return self.x*other.x + self.y*other.y + self.z*other.z
     
+
+    def cross(self,other):
+        return Vector3D(self.y*other.z-self.z*other.y,self.z*other.x-self.x*other.z,self.x*other.y-self.y*other.x)
+
     def __getitem__(self, idx):
         assert idx == 0 or idx == 1 or idx == 2
         if idx == 0:

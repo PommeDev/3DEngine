@@ -104,7 +104,7 @@ def to_display(triangle,camera_pos,theta):
     
     N = np.cross((V2 - V0),(V1 - V0))
     L = np.array([0, 0, 1])
-    display = N.dot(L) >= 0
+    display = N.dot(L) <= 0
 
 
 

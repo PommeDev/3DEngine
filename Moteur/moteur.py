@@ -117,9 +117,13 @@ class Moteur:
             self.window.fill((0,0,0))
 
             if not(self.old_cam_pos == self.camera):
+                #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
+                #self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
 
             if not(self.old_cam_angle == self.orientation_c):
+                #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
+                #self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
 
             if self.tampon.indice != self.last_indice:
@@ -127,6 +131,8 @@ class Moteur:
 
             self.scroll_dir = 0
 
+            #self.C2.draw_empty(self.window)
+            #self.C1.draw_empty(self.window)
             self.S1.draw(self.window,self.camera,self.orientation_c)
 
             p.display.flip()

@@ -29,3 +29,55 @@ class Triangle:
 
     def draw_full(self,window,c="red"):
         p.draw.polygon(window,c,self.P2D)
+    
+    def should_draw(self, camera_pos):
+        if not(self.is_ccw):
+            self.P2,self.P3 = self.P3,self.P2
+        N = (self.P2 - self.P1).cross(self.P3 - self.P1)  # normale orientée
+        L = self.P1 - camera_pos          # vecteur vers la caméra
+
+        return N@L < 0  # True si triangle orienté vers la caméra
+    
+    def should_draw_2(self,camera_pos,theta):
+        if not(self.is_ccw):
+            self.P2,self.P3 = self.P3,self.P2
+        
+        Rx = np.array([
+            [1, 0, 0],
+            [0, np.cos(theta[0]), np.sin(theta[0])],
+            [0, -np.sin(theta[0]), np.cos(theta[0])]
+        ])
+        
+        Ry = np.array([
+            [np.cos(theta[1]), 0, -np.sin(theta[1])],
+            [0, 1, 0],
+            [np.sin(theta[1]), 0, np.cos(theta[1])]
+        ])
+        
+        Rz = np.array([
+            [np.cos(theta[2]), np.sin(theta[2]), 0],
+            [-np.sin(theta[2]), np.cos(theta[2]), 0],
+            [0, 0, 1]
+        ])
+
+        view = Rz @ Ry @ Rx  # rotation totale
+
+        # Transforme les sommets du triangle
+        V0 = view @ self.P1.to_array()
+        V1 = view @ self.P2.to_array()
+        V2 = view @ self.P3.to_array()
+
+        # Normale
+        N = np.cross(V1 - V0, V2 - V0)
+
+        # Position caméra dans l’espace caméra (c’est 0 si la caméra est au centre)
+        camera_in_view = view @ camera_pos.to_array()
+        L = V0 - camera_in_view
+        return N.dot(L) < 0
+
+
+    def is_ccw(self):
+        p1 = self.P2D[1]
+        p0 = self.P2D[0]
+        p2 = self.P2D[2]
+        return (p1.x - p0.x)*(p2.y - p0.y) - (p1.y - p0.y)*(p2.x - p0.x) > 0

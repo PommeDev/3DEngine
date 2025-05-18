@@ -96,6 +96,7 @@ class Moteur:
 
     def run(self):
         p.init()
+
         is_running = True
         self.old_cam_pos = self.camera
         self.old_cam_angle = self.orientation_c
@@ -144,6 +145,8 @@ class Moteur:
             self.tampon.blit(self.window)
 
             p.display.flip()
+
+
             p.time.Clock().tick(60)
             
         p.quit()

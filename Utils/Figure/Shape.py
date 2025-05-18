@@ -20,3 +20,10 @@ class Shape:
             j+= 1
         
 
+    def draw_tampon(self, tampon,camera,theta):
+        for i in self.triangles:
+            if i.should_draw_2(camera,theta):
+                i.draw_tampon_empty(tampon)
+        
+    
+

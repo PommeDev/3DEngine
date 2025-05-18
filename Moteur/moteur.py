@@ -35,6 +35,8 @@ class Moteur:
 
         self.S1 = Shape(self.C1.to_triangle())
         self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
+        self.S2 = Shape(self.C2.to_triangle())
+        self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
 
         #self.tampon.tampon_b[p1_2[0], p1_2[1]] = 255
         #self.tampon.tampon_b[p2_2[0], p2_2[1]] = 255
@@ -53,16 +55,16 @@ class Moteur:
         
         if pressed[p.K_UP]:
             
-            self.camera[0] -= speed*self.dt
-        
-        if pressed[p.K_DOWN]:
-            self.camera[0] += speed*self.dt
-        
-        if pressed[p.K_LEFT]:
             self.camera[1] -= speed*self.dt
         
-        if pressed[p.K_RIGHT]:
+        if pressed[p.K_DOWN]:
             self.camera[1] += speed*self.dt
+        
+        if pressed[p.K_LEFT]:
+            self.camera[0] -= speed*self.dt
+        
+        if pressed[p.K_RIGHT]:
+            self.camera[0] += speed*self.dt
         
 
     def move_cam(self, event):
@@ -87,8 +89,8 @@ class Moteur:
         # Mouvement souris
         elif event.type == p.MOUSEMOTION and self.dragging:
             dx, dy = event.rel  # Mouvement relatif de la souris
-            self.orientation_c[1] += dx * sensitivity  # yaw (rotation Y)
-            self.orientation_c[0] += dy * sensitivity  # pitch (rotation X)
+            self.orientation_c[0] += dx * sensitivity  # yaw (rotation Y)
+            self.orientation_c[1] += dy * sensitivity  # pitch (rotation X)
             
 
 
@@ -120,20 +122,26 @@ class Moteur:
                 #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
+                self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
 
             if not(self.old_cam_angle == self.orientation_c):
                 #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
+                self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
 
-            if self.tampon.indice != self.last_indice:
-                self.last_indice = self.tampon.blit(self.window)
-
+            
+            
             self.scroll_dir = 0
 
             #self.C2.draw_empty(self.window)
             #self.C1.draw_empty(self.window)
-            self.S1.draw(self.window,self.camera,self.orientation_c)
+            #self.S1.draw(self.window,self.camera,self.orientation_c)
+            self.S1.draw_tampon(self.tampon,self.camera,self.orientation_c)
+            self.S2.draw_tampon(self.tampon,self.camera,self.orientation_c)
+
+
+            self.tampon.blit(self.window)
 
             p.display.flip()
             p.time.Clock().tick(60)

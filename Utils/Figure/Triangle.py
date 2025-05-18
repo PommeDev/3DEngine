@@ -7,6 +7,7 @@ class Triangle:
         self.P1 = P1
         self.P2 = P2
         self.P3 = P3
+        self.bot = False
 
         self.P2D = [0,0,0]
 
@@ -29,7 +30,18 @@ class Triangle:
 
     def draw_full(self,window,c="red"):
         p.draw.polygon(window,c,self.P2D)
-    
+
+
+    def draw_tampon_empty(self,tampon,c=np.array([255,0,0])):
+        P1 = self.P2D[0]
+        P2 = self.P2D[1]
+        P3 = self.P2D[2]
+        tampon.draw_line(P1,P2,c)
+        tampon.draw_line(P2,P3,c)
+        tampon.draw_line(P1,P3,c)
+
+
+
     def should_draw(self, camera_pos):
         if not(self.is_ccw):
             self.P2,self.P3 = self.P3,self.P2
@@ -73,6 +85,9 @@ class Triangle:
         # Position caméra dans l’espace caméra (c’est 0 si la caméra est au centre)
         camera_in_view = view @ camera_pos.to_array()
         L = V0 - camera_in_view
+        if self.bot:
+            return not(N.dot(L) < 0)
+        
         return N.dot(L) < 0
 
 

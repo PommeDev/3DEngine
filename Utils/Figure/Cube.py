@@ -111,13 +111,16 @@ class Cube:
 
         t7  = Triangle(self.P2, self.P7, self.P6)
         t8  = Triangle(self.P2, self.P3, self.P7)
+        t7.bot = True
+        t8.bot = True
 
         t9  = Triangle(self.P4, self.P3, self.P7)
         t10 = Triangle(self.P4, self.P7, self.P8)
 
+
         t11 = Triangle(self.P1, self.P5, self.P6)
         t12 = Triangle(self.P1, self.P6, self.P2)
-
+        
 
         return [t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12]
     

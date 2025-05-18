@@ -7,6 +7,7 @@ from Utils.Figure.Cube import Cube
 from Utils.Figure.Shape import Shape
 from Utils.Figure.Triangle import Triangle
 from Moteur.read_obj_file_simple import * 
+from random import randint
 
 class Moteur:
     #Probleme les x et y sont inversé partout
@@ -55,7 +56,11 @@ class Moteur:
     def generate_cubes(self,file):
         self.c_l = generate_cubes(read(file))
         for i in self.c_l:
-            self.s_l.append(Shape(i.to_triangle())) 
+            self.s_l.append(Shape(i.to_triangle()))
+        
+        for i in self.s_l:
+            i.color = np.array([randint(0,255),randint(0,255),randint(0,255)])
+            i.line_color = np.array([randint(0,255),randint(0,255),randint(0,255)])
     
     def update_cubes(self):
         for i in self.s_l:

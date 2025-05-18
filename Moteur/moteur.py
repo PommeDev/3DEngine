@@ -6,6 +6,7 @@ from Utils.Image.Perspective import *
 from Utils.Figure.Cube import Cube
 from Utils.Figure.Shape import Shape
 from Utils.Figure.Triangle import Triangle
+from Moteur.read_obj_file_simple import * 
 
 class Moteur:
     #Probleme les x et y sont inversé partout
@@ -24,6 +25,9 @@ class Moteur:
         self.dt = p.time.Clock().tick(60)/1000.0
         self.scroll_dir = 0
 
+
+        self.c_l = []
+        self.s_l = []
 
         self.C1 = Cube(Vector3D(100,100,0),100)
         self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
@@ -46,6 +50,21 @@ class Moteur:
         #p.draw.line(self.window, (0, 255, 0), p1_2, p2_2, 1)  # ligne verte entre p1 et p2
         #p.draw.line(self.window, (0, 255, 0), p2_2, p3_2, 1)  # ligne entre p2 et p3
         #p.draw.line(self.window, (255, 0, 0), p3_2, p1_2, 1)  # ligne entre p3 et p1
+
+
+    def generate_cubes(self,file):
+        self.c_l = generate_cubes(read(file))
+        for i in self.c_l:
+            self.s_l.append(Shape(i.to_triangle())) 
+    
+    def update_cubes(self):
+        for i in self.s_l:
+            i.to_2D(self.camera,self.orientation_c,e(self.FOV))
+
+    def draw_cubes(self):
+        for i in self.s_l:
+            i.draw_tampon(self.tampon,self.camera,self.orientation_c)
+
 
     def move_cam_arrow(self):
         #Les positions des x et y sont inversé pour la caméra
@@ -101,6 +120,9 @@ class Moteur:
         self.old_cam_pos = self.camera
         self.old_cam_angle = self.orientation_c
         scroll_speed = 400
+        self.generate_cubes("TestMyEngine.obj")
+        self.update_cubes()
+        
         while is_running:
             for event in p.event.get():
                 if event.type == p.QUIT:
@@ -122,15 +144,16 @@ class Moteur:
             if not(self.old_cam_pos == self.camera):
                 #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
-                self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
-                self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
-
+                #self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
+                #self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
+                self.update_cubes()
+                
             if not(self.old_cam_angle == self.orientation_c):
                 #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
-                self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
-                self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
-
+                #self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
+                #self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
+                self.update_cubes()
             
             
             self.scroll_dir = 0
@@ -138,9 +161,10 @@ class Moteur:
             #self.C2.draw_empty(self.window)
             #self.C1.draw_empty(self.window)
             #self.S1.draw(self.window,self.camera,self.orientation_c)
-            self.S1.draw_tampon(self.tampon,self.camera,self.orientation_c)
-            self.S2.draw_tampon(self.tampon,self.camera,self.orientation_c)
+            #self.S1.draw_tampon(self.tampon,self.camera,self.orientation_c)
+            #self.S2.draw_tampon(self.tampon,self.camera,self.orientation_c)
 
+            self.draw_cubes()
 
             self.tampon.blit(self.window)
 
@@ -148,5 +172,6 @@ class Moteur:
 
 
             p.time.Clock().tick(60)
+            print('a')
             
         p.quit()

@@ -1,4 +1,5 @@
 from Utils.Image.Perspective import *
+from Utils.Vector import Vector2D
 import pygame as p
 
 class Triangle:
@@ -40,6 +41,30 @@ class Triangle:
         tampon.draw_line(P2,P3,c)
         tampon.draw_line(P1,P3,c)
 
+
+    def draw_tampon_border(self,tampon,c=np.array([0,255,0])):
+        #Bug legerement
+        P1 = Vector2D.Vector2D.from_list(self.P2D[0])
+        P2 = Vector2D.Vector2D.from_list(self.P2D[1])
+        P3 = Vector2D.Vector2D.from_list(self.P2D[2])
+        a = abs(P1-P2)
+        b = abs(P2-P3)
+        d = abs(P1-P3)
+        if a >= b and a >= d:
+            tampon.draw_line(P2,P3,c)
+            tampon.draw_line(P1,P3,c)
+
+        elif b >= a and b >= d:
+            tampon.draw_line(P1,P2,c)
+            tampon.draw_line(P1,P3,c)
+        else:
+            tampon.draw_line(P1,P2,c)
+            tampon.draw_line(P2,P3,c)
+        
+
+
+    def draw_tampon_full(self,tampon,c=np.array([255,0,0])):
+        tampon.fill_triangle(self,c)
 
 
     def should_draw(self, camera_pos):

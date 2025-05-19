@@ -28,7 +28,7 @@ class Moteur:
 
 
         self.c_l = []
-        self.s_l = []
+        self.s_l = Shape([])
 
         self.C1 = Cube(Vector3D(100,100,0),100)
         self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
@@ -56,19 +56,23 @@ class Moteur:
     def generate_cubes(self,file):
         self.c_l = generate_cubes(read(file))
         for i in self.c_l:
-            self.s_l.append(Shape(i.to_triangle()))
+            for j in i.to_triangle():
+                self.s_l.triangles.append(j)
         
-        for i in self.s_l:
+
+        self.s_l.updateZorder()
+
+
+        for i in self.s_l.triangles:
             i.color = np.array([randint(0,255),randint(0,255),randint(0,255)])
             i.line_color = np.array([randint(0,255),randint(0,255),randint(0,255)])
-    
+
+
     def update_cubes(self):
-        for i in self.s_l:
-            i.to_2D(self.camera,self.orientation_c,e(self.FOV))
+        self.s_l.to_2D(self.camera,self.orientation_c,e(self.FOV))
 
     def draw_cubes(self):
-        for i in self.s_l:
-            i.draw_tampon(self.tampon,self.camera,self.orientation_c)
+            self.s_l.draw_tampon(self.tampon,self.camera,self.orientation_c)
 
 
     def move_cam_arrow(self):
@@ -177,6 +181,5 @@ class Moteur:
 
 
             p.time.Clock().tick(60)
-            print('a')
             
         p.quit()

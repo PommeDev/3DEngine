@@ -2,7 +2,6 @@ import Utils.Vector.Vector3D as V
 import Utils.Figure.Cube as C
 
 def read(file):
-    #probleme dans l'odre des sommets
     vectors = []
     with open(file,'r') as f:
         t = []
@@ -15,7 +14,7 @@ def read(file):
                     vectors.append(sort_vertex(t))
                 t = []
     
-    vectors[1], vectors[0] = vectors[0],vectors[1] #pour un rendu plus ocrrect en attendant les Zorders
+    #vectors[1], vectors[0] = vectors[0],vectors[1] #pour un rendu plus ocrrect en attendant les Zorders
     return vectors
 
 

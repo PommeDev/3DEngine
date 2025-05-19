@@ -4,12 +4,13 @@ import pygame as p
 
 class Triangle:
     """Sommets dans l'ordre anti-horraire"""
-    def __init__(self,P1,P2,P3):
+    def __init__(self,P1,P2,P3,color=np.array([255,0,0]),line_color=np.array([0,255,0])):
         self.P1 = P1
         self.P2 = P2
         self.P3 = P3
         self.bot = False
-
+        self.color = color
+        self.line_color = line_color
         self.P2D = [0,0,0]
 
     def __iter__(self):
@@ -24,25 +25,25 @@ class Triangle:
             self.P2D[j] = perspective_compute(i,c,theta,e)
             j+=1
         
-    def draw_empty(self,window,c="red"):
-        p.draw.line(window,c,self.P2D[0],self.P2D[1])
-        p.draw.line(window,c,self.P2D[1],self.P2D[2])
-        p.draw.line(window,c,self.P2D[2],self.P2D[0])
+    def draw_empty(self,window):
+        p.draw.line(window,self.color,self.P2D[0],self.P2D[1])
+        p.draw.line(window,self.color,self.P2D[1],self.P2D[2])
+        p.draw.line(window,self.color,self.P2D[2],self.P2D[0])
 
-    def draw_full(self,window,c="red"):
-        p.draw.polygon(window,c,self.P2D)
+    def draw_full(self,window):
+        p.draw.polygon(window,self.color,self.P2D)
 
 
-    def draw_tampon_empty(self,tampon,c=np.array([255,0,0])):
+    def draw_tampon_empty(self,tampon):
         P1 = self.P2D[0]
         P2 = self.P2D[1]
         P3 = self.P2D[2]
-        tampon.draw_line(P1,P2,c)
-        tampon.draw_line(P2,P3,c)
-        tampon.draw_line(P1,P3,c)
+        tampon.draw_line(P1,P2,self.line_color)
+        tampon.draw_line(P2,P3,self.line_color)
+        tampon.draw_line(P1,P3,self.line_color)
 
 
-    def draw_tampon_border(self,tampon,c=np.array([0,255,0])):
+    def draw_tampon_border(self,tampon):
         #Bug legerement
         P1 = Vector2D.Vector2D.from_list(self.P2D[0])
         P2 = Vector2D.Vector2D.from_list(self.P2D[1])
@@ -51,20 +52,20 @@ class Triangle:
         b = abs(P2-P3)
         d = abs(P1-P3)
         if a >= b and a >= d:
-            tampon.draw_line(P2,P3,c)
-            tampon.draw_line(P1,P3,c)
+            tampon.draw_line(P2,P3,self.line_color)
+            tampon.draw_line(P1,P3,self.line_color)
 
         elif b >= a and b >= d:
-            tampon.draw_line(P1,P2,c)
-            tampon.draw_line(P1,P3,c)
+            tampon.draw_line(P1,P2,self.line_color)
+            tampon.draw_line(P1,P3,self.line_color)
         else:
-            tampon.draw_line(P1,P2,c)
-            tampon.draw_line(P2,P3,c)
+            tampon.draw_line(P1,P2,self.line_color)
+            tampon.draw_line(P2,P3,self.line_color)
         
 
 
-    def draw_tampon_full(self,tampon,c=np.array([255,0,0])):
-        tampon.fill_triangle(self,c)
+    def draw_tampon_full(self,tampon):
+        tampon.fill_triangle(self,self.color)
 
 
     def should_draw(self, camera_pos):

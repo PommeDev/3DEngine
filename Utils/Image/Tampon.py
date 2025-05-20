@@ -36,7 +36,7 @@ class Tampon:
 
     @nb.njit
     def bresenham_numba(x0, y0, x1, y1):
-        max_points = 4096  # taille max (à ajuster si besoin)
+        max_points = 4096  # taille max 
         points = np.empty((max_points, 2), dtype=np.int32)
         idx = 0
 
@@ -64,7 +64,6 @@ class Tampon:
 
 
     def bresenham(self,P1,P2):
-        """Génère les points d'une ligne entre (x0, y0) et (x1, y1) dans un tableau discret"""
         points = []
         x0,y0 = P1[0],P1[1]
         x1,y1 = P2[0],P2[1]

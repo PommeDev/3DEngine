@@ -7,6 +7,8 @@ from Utils.Figure.Cube import Cube
 from Utils.Figure.Shape import Shape
 from Utils.Figure.Triangle import Triangle
 from Moteur.read_obj_file_simple import * 
+from Utils.Figure.Vertex import Vertex
+from PIL import Image
 from random import randint
 
 class Moteur:
@@ -43,15 +45,13 @@ class Moteur:
         self.S2 = Shape(self.C2.to_triangle())
         self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
 
-        #self.tampon.tampon_b[p1_2[0], p1_2[1]] = 255
-        #self.tampon.tampon_b[p2_2[0], p2_2[1]] = 255
-        #self.tampon.tampon_b[p3_2[0], p3_2[1]] = 255
 
-        #print(p1_2,p2_2,p3_2)
-        #p.draw.line(self.window, (0, 255, 0), p1_2, p2_2, 1)  # ligne verte entre p1 et p2
-        #p.draw.line(self.window, (0, 255, 0), p2_2, p3_2, 1)  # ligne entre p2 et p3
-        #p.draw.line(self.window, (255, 0, 0), p3_2, p1_2, 1)  # ligne entre p3 et p1
 
+        imageRGB = Image.open("texture1.png").convert("RGB") 
+        imageData = np.asarray(imageRGB)
+        self.A = Triangle(Vertex(Vector3D(200,100,10),Vector2D(0,0)),Vertex(Vector3D(300,100,10),Vector2D(32,0)),Vertex(Vector3D(300,200,110),Vector2D(32,32)))
+        self.A.compute_2D(self.camera,self.orientation_c,e(self.FOV))
+        self.A.texture = imageData
 
     def generate_cubes(self,file):
         self.c_l = generate_cubes(read(file))
@@ -156,6 +156,7 @@ class Moteur:
                 #self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 self.update_cubes()
+                self.A.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 
             if not(self.old_cam_angle == self.orientation_c):
                 #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
@@ -163,6 +164,7 @@ class Moteur:
                 #self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 self.update_cubes()
+                self.A.compute_2D(self.camera,self.orientation_c,e(self.FOV))
             
             
             self.scroll_dir = 0
@@ -173,8 +175,8 @@ class Moteur:
             #self.S1.draw_tampon(self.tampon,self.camera,self.orientation_c)
             #self.S2.draw_tampon(self.tampon,self.camera,self.orientation_c)
 
-            self.draw_cubes()
-
+            #self.draw_cubes()
+            self.A.draw_uv(self.tampon)
             self.tampon.blit(self.window)
 
             p.display.flip()

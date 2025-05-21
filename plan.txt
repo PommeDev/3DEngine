@@ -1,15 +1,17 @@
-Affichage d’une fenêtre et de pixels.
+OK -> Affichage d’une fenêtre et de pixels.
 
-Projection et affichage d’un triangle.
+OK -> Projection et affichage d’un triangle.
 
-Création d’un cube avec transformations.
+OK -> Création d’un cube avec transformations.
 
-Ajout de la caméra et projection.
+OK -> Ajout de la caméra et projection.
 
 Éclairage simple.
 
-Chargement de modèles.
+OK -> Chargement de modèles.
 
-Ajout des textures.
+OK -> Ajout des textures.
 
 Optimisations et effets avancés.
+
+OK -> Zorder

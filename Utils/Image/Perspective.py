@@ -42,8 +42,8 @@ def perspective_compute(a,c,theta,e):
     y_ndc = (d[1] / d[2]) * f
     
     # Transformation  [-1, 1] vers pixels
-    x_screen = int((x_ndc + 1) * 0.5 * 800)
-    y_screen = int((1 - y_ndc) * 0.5 * 600)  # inversé pour Pygame
+    x_screen = int((x_ndc + 1)  * 800)
+    y_screen = int((1 - y_ndc)  * 600)  # inversé pour Pygame
 
     b = np.array([x_screen, y_screen])
 
@@ -54,7 +54,7 @@ def perspective_compute(a,c,theta,e):
 
 
 
-def e(FOV):
+def e_compute(FOV):
     e_z = 1/np.tan(FOV/2)
     e =  np.zeros(3)
     e[2] = e_z

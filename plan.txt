@@ -4,14 +4,14 @@ OK -> Projection et affichage d’un triangle.
 
 OK -> Création d’un cube avec transformations.
 
-Ajout de la caméra et projection.
+OK -> Ajout de la caméra et projection.
 
 Éclairage simple.
 
 OK -> Chargement de modèles.
 
-Ajout des textures.
+OK -> Ajout des textures.
 
 Optimisations et effets avancés.
 
-Zorder
+OK -> Zorder

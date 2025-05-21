@@ -1,10 +1,13 @@
 from Utils.Image.Perspective import *
 from Utils.Vector import Vector2D
+from Utils.Figure.Vertex import Vertex
+import numba as nb
 import pygame as p
+
 
 class Triangle:
     """Sommets dans l'ordre anti-horraire"""
-    def __init__(self,P1,P2,P3,color=np.array([255,0,0]),line_color=np.array([0,255,0])):
+    def __init__(self,P1:Vertex,P2:Vertex,P3:Vertex,color=np.array([255,0,0]),line_color=np.array([0,255,0])):
         self.P1 = P1
         self.P2 = P2
         self.P3 = P3
@@ -12,6 +15,7 @@ class Triangle:
         self.color = color
         self.line_color = line_color
         self.P2D = [0,0,0]
+        self.texture = None
 
     def __iter__(self):
         yield self.P1
@@ -22,7 +26,7 @@ class Triangle:
     def compute_2D(self,c,theta,e):
         j = 0
         for i in self:
-            self.P2D[j] = perspective_compute(i,c,theta,e)
+            self.P2D[j] = perspective_compute(i.pos,c,theta,e)
             j+=1
         
     def draw_empty(self,window):
@@ -101,9 +105,9 @@ class Triangle:
         view = Rz @ Ry @ Rx  # rotation totale
 
         # Transforme les sommets du triangle
-        V0 = view @ self.P1.to_array()
-        V1 = view @ self.P2.to_array()
-        V2 = view @ self.P3.to_array()
+        V0 = view @ self.P1.pos.to_array()
+        V1 = view @ self.P2.pos.to_array()
+        V2 = view @ self.P3.pos.to_array()
 
         # Normale
         N = np.cross(V1 - V0, V2 - V0)
@@ -122,3 +126,52 @@ class Triangle:
         p0 = self.P2D[0]
         p2 = self.P2D[2]
         return (p1.x - p0.x)*(p2.y - p0.y) - (p1.y - p0.y)*(p2.x - p0.x) > 0
+    
+
+    @nb.njit
+    def draw_uv_nb(tampon_SSAA,texture,points_to_fill,p1,p2,p3,uv1,uv2,uv3):
+        twidth,theight = texture.shape[0],texture.shape[1]
+        for i in range(0,len(points_to_fill),2):
+            y,x = points_to_fill[i],points_to_fill[i+1]
+            x_u,y_u = uv_barycentre_nb(p1,p2,p3,uv1,uv2,uv3,np.array([x,y]))
+            tampon_SSAA[y,x] = texture[int(x_u*twidth),int(y_u*theight)]
+
+    def draw_uv(self,tampon):
+        if not(self.texture is None):
+            p1,p2,p3 = self.P2D
+            uv1 = self.P1.uv
+            uv2 = self.P2.uv
+            uv3 = self.P3.uv
+            points_to_fill = tampon.fill_triangle_uv(self)
+            Triangle.draw_uv_nb(tampon.tampon_SSAA,self.texture,points_to_fill,p1,p2,p3,uv1.to_array(),uv2.to_array(),uv3.to_array())
+        else:
+            self.draw_tampon_full(tampon)
+
+
+    def uv_barycentre(self,p):
+        p1,p2,p3 = self.P2D
+        uv1,uv2,uv3 = self.P1.uv,self.P2.uv,self.P3.uv
+        x,y = p[0],p[1]
+        x1,y1 = p1[0],p1[1]
+        x2,y2 = p2[0],p2[1]
+        x3,y3 = p3[0],p3[1]
+        denom = (y2-y3)*(x1-x3)+(x3-x2)*(y1-y3)
+        alpha = ((y2-y3)*(x-x3)+(x3-x2)*(y-y3))/denom
+        beta = ((y3-y1)*(x-x3)+(x1-x3)*(y-y3))/denom
+        gamma = 1-alpha-beta
+        uvp = alpha*uv1+beta*uv2+gamma*uv3
+        return uvp
+
+
+@nb.njit
+def uv_barycentre_nb(p1,p2,p3,uv1,uv2,uv3,p):
+    x,y = p[0],p[1]
+    x1,y1 = p1[0],p1[1]
+    x2,y2 = p2[0],p2[1]
+    x3,y3 = p3[0],p3[1]
+    denom = (y2-y3)*(x1-x3)+(x3-x2)*(y1-y3)
+    alpha = ((y2-y3)*(x-x3)+(x3-x2)*(y-y3))/denom
+    beta = ((y3-y1)*(x-x3)+(x1-x3)*(y-y3))/denom
+    gamma = 1-alpha-beta
+    uvp = alpha*uv1+beta*uv2+gamma*uv3
+    return uvp

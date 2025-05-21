@@ -3,18 +3,19 @@ from Utils.Image.Perspective import *
 from Utils.Vector.Vector2D import *
 import pygame as p
 from Utils.Figure.Triangle import Triangle
+from Utils.Figure.Vertex import Vertex
 
 class Cube:
     def __init__(self, pos:Vector3D, edge:int):
         x, y, z = pos[0],pos[1],pos[2]
-        self.P1 = pos
-        self.P2 = Vector3D(x+edge,y,z)
-        self.P3 = Vector3D(x+edge,y-edge,z)
-        self.P4 = Vector3D(x,y-edge,z)
-        self.P5 = Vector3D(x,y,z+edge)
-        self.P6 = Vector3D(x+edge,y,z+edge)
-        self.P7 = Vector3D(x+edge,y-edge,z+edge)
-        self.P8 = Vector3D(x,y-edge,z+edge)
+        self.P1 = Vertex(pos)
+        self.P2 = Vertex(Vector3D(x+edge,y,z))
+        self.P3 = Vertex(Vector3D(x+edge,y-edge,z))
+        self.P4 = Vertex(Vector3D(x,y-edge,z))
+        self.P5 = Vertex(Vector3D(x,y,z+edge))
+        self.P6 = Vertex(Vector3D(x+edge,y,z+edge))
+        self.P7 = Vertex(Vector3D(x+edge,y-edge,z+edge))
+        self.P8 = Vertex(Vector3D(x,y-edge,z+edge))
         self.all_points = [self.P1,self.P2,self.P3,self.P4,self.P5,self.P6,self.P7,self.P8]
         
         self.p1 = None
@@ -48,14 +49,14 @@ class Cube:
 
 
     def compute_2D(self,c,theta,e):
-        self.p1 = Vector2D.from_list(perspective_compute(self.P1,c,theta,e))
-        self.p2 = Vector2D.from_list(perspective_compute(self.P2,c,theta,e))
-        self.p3 = Vector2D.from_list(perspective_compute(self.P3,c,theta,e))
-        self.p4 = Vector2D.from_list(perspective_compute(self.P4,c,theta,e))
-        self.p5 = Vector2D.from_list(perspective_compute(self.P5,c,theta,e))
-        self.p6 = Vector2D.from_list(perspective_compute(self.P6,c,theta,e))
-        self.p7 = Vector2D.from_list(perspective_compute(self.P7,c,theta,e))
-        self.p8 = Vector2D.from_list(perspective_compute(self.P8,c,theta,e))
+        self.p1 = Vector2D.from_list(perspective_compute(self.P1.pos,c,theta,e))
+        self.p2 = Vector2D.from_list(perspective_compute(self.P2.pos,c,theta,e))
+        self.p3 = Vector2D.from_list(perspective_compute(self.P3.pos,c,theta,e))
+        self.p4 = Vector2D.from_list(perspective_compute(self.P4.pos,c,theta,e))
+        self.p5 = Vector2D.from_list(perspective_compute(self.P5.pos,c,theta,e))
+        self.p6 = Vector2D.from_list(perspective_compute(self.P6.pos,c,theta,e))
+        self.p7 = Vector2D.from_list(perspective_compute(self.P7.pos,c,theta,e))
+        self.p8 = Vector2D.from_list(perspective_compute(self.P8.pos,c,theta,e))
         self.update()
 
     def __iter__(self):

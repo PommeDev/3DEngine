@@ -54,7 +54,7 @@ def perspective_compute(a,c,theta,e):
 
 
 
-def e(FOV):
+def e_compute(FOV):
     e_z = 1/np.tan(FOV/2)
     e =  np.zeros(3)
     e[2] = e_z

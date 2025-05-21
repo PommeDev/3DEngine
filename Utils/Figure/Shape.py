@@ -13,9 +13,9 @@ class Shape:
     def updateZorder(self):
         j = 0
         for i in self.triangles:
-            P1 = i.P1
-            P2 = i.P2
-            P3 = i.P3
+            P1 = i.P1.pos
+            P2 = i.P2.pos
+            P3 = i.P3.pos
             indice = min(P1[2],P2[2],P3[2])
             if self.zorder.get(indice):
                 self.zorder[indice].append(j)

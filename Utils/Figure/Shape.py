@@ -50,6 +50,13 @@ class Shape:
                 if t.should_draw_2(camera,theta):
                     t.draw_tampon_full(tampon)
                     t.draw_tampon_border(tampon)
-        
-    
+
+
+    def draw_uv(self,tampon,camera,theta,ambient):
+        for i in self.k:
+            for l in self.zorder[i]:
+                t = self.triangles[l]
+                if t.should_draw_2(camera,theta):
+                    t.draw_uv(tampon,ambient)
+                    
 

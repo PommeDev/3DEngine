@@ -10,6 +10,7 @@ from Moteur.read_obj_file_simple import *
 from Utils.Figure.Vertex import Vertex
 from PIL import Image
 from random import randint
+import Utils.Lights.Ambient as LA
 
 class Moteur:
     #Probleme les x et y sont inversé partout
@@ -31,6 +32,8 @@ class Moteur:
 
         self.c_l = []
         self.s_l = Shape([])
+
+        self.ambient = LA.Ambient(Vector3D(100,100,0),0.05)
 
         #self.C1 = Cube(Vector3D(100,100,0),100)
         #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
@@ -75,7 +78,7 @@ class Moteur:
         self.s_l.to_2D(self.camera,self.orientation_c,e_compute(self.FOV))
 
     def draw_cubes(self):
-            self.s_l.draw_tampon(self.tampon,self.camera,self.orientation_c)
+            self.s_l.draw_uv(self.tampon,self.camera,self.orientation_c,self.ambient)
 
 
     def move_cam_arrow(self):
@@ -133,6 +136,8 @@ class Moteur:
         self.generate_cubes("TestMyEngine.obj")
         self.update_cubes()
         
+        self.A.should_draw_2(self.camera,self.orientation_c)
+
         while is_running:
             for event in p.event.get():
                 if event.type == p.QUIT:
@@ -157,8 +162,9 @@ class Moteur:
                 #self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 self.update_cubes()
-                self.A.compute_2D(self.camera,self.orientation_c,e(self.FOV))
-                
+                self.A.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
+                self.A.should_draw_2(self.camera,self.orientation_c)
+
             if not(self.old_cam_angle == self.orientation_c):
                 #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
@@ -166,7 +172,7 @@ class Moteur:
                 #self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 self.update_cubes()
                 self.A.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
-            
+                self.A.should_draw_2(self.camera,self.orientation_c)
             
             self.scroll_dir = 0
 
@@ -176,8 +182,8 @@ class Moteur:
             #self.S1.draw_tampon(self.tampon,self.camera,self.orientation_c)
             #self.S2.draw_tampon(self.tampon,self.camera,self.orientation_c)
 
-            #self.draw_cubes()
-            self.A.draw_uv(self.tampon)
+            self.draw_cubes()
+            #self.A.draw_uv(self.tampon,self.ambient)
             self.tampon.blit(self.window)
 
             p.display.flip()

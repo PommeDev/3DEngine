@@ -1,9 +1,11 @@
 from Utils.Image.Perspective import *
 from Utils.Vector import Vector2D
+from Utils.Vector import Vector3D
 from Utils.Figure.Vertex import Vertex
 import numba as nb
 import pygame as p
-
+import Utils.Lights.Ambient as LA
+from Utils.Lights.model import diffuse_light_lambert
 
 class Triangle:
     """Sommets dans l'ordre anti-horraire"""
@@ -111,7 +113,7 @@ class Triangle:
 
         # Normale
         N = np.cross(V1 - V0, V2 - V0)
-
+        self.normal = N
         # Position caméra dans l’espace caméra (c’est 0 si la caméra est au centre)
         camera_in_view = view @ camera_pos.to_array()
         L = V0 - camera_in_view
@@ -136,7 +138,17 @@ class Triangle:
             x_u,y_u = uv_barycentre_nb(p1,p2,p3,uv1,uv2,uv3,np.array([x,y]))
             tampon_SSAA[y,x] = texture[int(x_u*twidth),int(y_u*theight)]
 
-    def draw_uv(self,tampon):
+
+    @nb.njit
+    def add_light_nb(tampon_SSAA,points_to_fill,lx,ly,lz,intensity_l,light_l,n,P1x,P1y,P1z):
+        for i in range(0,len(points_to_fill),2):
+            y,x = points_to_fill[i],points_to_fill[i+1]
+            color = tampon_SSAA[y,x]
+            tampon_SSAA[y,x] = compute_ambient_lambert(lx,ly,lz,P1x,P1y,P1z,intensity_l,n,color,light_l)
+
+
+
+    def draw_uv(self,tampon,ambient:LA.Ambient):
         if not(self.texture is None):
             p1,p2,p3 = self.P2D
             uv1 = self.P1.uv
@@ -144,6 +156,9 @@ class Triangle:
             uv3 = self.P3.uv
             points_to_fill = tampon.fill_triangle_uv(self)
             Triangle.draw_uv_nb(tampon.tampon_SSAA,self.texture,points_to_fill,p1,p2,p3,uv1.to_array(),uv2.to_array(),uv3.to_array())
+            
+            lx,ly,lz = ambient.pos.to_array()
+            Triangle.add_light_nb(tampon.tampon_SSAA,points_to_fill,lx,ly,lz,ambient.intensity,ambient.light,self.normal,self.P1.pos.x,self.P1.pos.y,self.P1.pos.z)
         else:
             self.draw_tampon_full(tampon)
 
@@ -175,3 +190,11 @@ def uv_barycentre_nb(p1,p2,p3,uv1,uv2,uv3,p):
     gamma = 1-alpha-beta
     uvp = alpha*uv1+beta*uv2+gamma*uv3
     return uvp
+
+@nb.njit
+def compute_ambient_lambert(x,yy,z,a,b,c,intensity,n,color,light):
+    pos = np.array([x,yy,z], dtype=np.float64)
+    y = np.array([a,b,c], dtype=np.float64)
+    L = (pos-y)/np.linalg.norm(pos-y)
+    return color*intensity + diffuse_light_lambert(L,n)*light
+    

@@ -136,14 +136,14 @@ class Cube:
     
     def from_list(list):
         C = Cube(Vector3D(),0)
-        C.P1 = Vertex(list[0])
-        C.P2 = Vertex(list[1])
-        C.P3 = Vertex(list[2])
-        C.P4 = Vertex(list[3])
-        C.P5 = Vertex(list[4])
-        C.P6 = Vertex(list[5])
-        C.P7 = Vertex(list[6])
-        C.P8 = Vertex(list[7])
+        C.P1 = list[0]
+        C.P2 = list[1]
+        C.P3 = list[2]
+        C.P4 = list[3]
+        C.P5 = list[4]
+        C.P6 = list[5]
+        C.P7 = list[6]
+        C.P8 = list[7]
         C.update()
 
         return C

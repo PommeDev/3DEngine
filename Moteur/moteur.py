@@ -32,29 +32,32 @@ class Moteur:
         self.c_l = []
         self.s_l = Shape([])
 
-        self.C1 = Cube(Vector3D(100,100,0),100)
-        self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
+        #self.C1 = Cube(Vector3D(100,100,0),100)
+        #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
 
 
-        self.C2 = Cube(Vector3D(100,200,0),100)
-        self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
+        #self.C2 = Cube(Vector3D(100,200,0),100)
+        #self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
 
 
-        self.S1 = Shape(self.C1.to_triangle())
-        self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
-        self.S2 = Shape(self.C2.to_triangle())
-        self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
+        #self.S1 = Shape(self.C1.to_triangle())
+        #self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
+        #self.S2 = Shape(self.C2.to_triangle())
+        #self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
 
 
 
         imageRGB = Image.open("texture1.png").convert("RGB") 
         imageData = np.asarray(imageRGB)
-        self.A = Triangle(Vertex(Vector3D(200,100,10),Vector2D(0,0)),Vertex(Vector3D(300,100,10),Vector2D(32,0)),Vertex(Vector3D(300,200,110),Vector2D(32,32)))
-        self.A.compute_2D(self.camera,self.orientation_c,e(self.FOV))
+        self.A = Triangle(Vertex(Vector3D(200,100,10),Vector2D(0,0)),Vertex(Vector3D(300,100,10),Vector2D(32/32,0)),Vertex(Vector3D(300,200,110),Vector2D(32/32,32/32)))
+        self.A.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
         self.A.texture = imageData
 
     def generate_cubes(self,file):
-        self.c_l = generate_cubes(read(file))
+        pos,u = read(file)
+        vertices = generate_vertices(pos,u)
+        self.c_l = generate_cubes(vertices)
+        
         for i in self.c_l:
             for j in i.to_triangle():
                 self.s_l.triangles.append(j)
@@ -62,14 +65,14 @@ class Moteur:
 
         self.s_l.updateZorder()
 
-
+        
         for i in self.s_l.triangles:
             i.color = np.array([randint(0,255),randint(0,255),randint(0,255)])
             i.line_color = np.array([randint(0,255),randint(0,255),randint(0,255)])
 
 
     def update_cubes(self):
-        self.s_l.to_2D(self.camera,self.orientation_c,e(self.FOV))
+        self.s_l.to_2D(self.camera,self.orientation_c,e_compute(self.FOV))
 
     def draw_cubes(self):
             self.s_l.draw_tampon(self.tampon,self.camera,self.orientation_c)
@@ -80,7 +83,6 @@ class Moteur:
         speed = 200
         
         pressed = p.key.get_pressed()
-        
         if pressed[p.K_UP]:
             
             self.camera[1] -= speed*self.dt
@@ -96,7 +98,6 @@ class Moteur:
         
 
     def move_cam(self, event):
-        
         
         if event.type == p.MOUSEWHEEL:
             self.scroll_dir = event.y
@@ -164,7 +165,7 @@ class Moteur:
                 #self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 self.update_cubes()
-                self.A.compute_2D(self.camera,self.orientation_c,e(self.FOV))
+                self.A.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
             
             
             self.scroll_dir = 0
@@ -180,8 +181,6 @@ class Moteur:
             self.tampon.blit(self.window)
 
             p.display.flip()
-
-
             p.time.Clock().tick(60)
             
         p.quit()

@@ -130,19 +130,22 @@ class Triangle:
 
     @nb.njit
     def draw_uv_nb(tampon_SSAA,texture,points_to_fill,p1,p2,p3,uv1,uv2,uv3):
+        twidth,theight = texture.shape[0],texture.shape[1]
         for i in range(0,len(points_to_fill),2):
             y,x = points_to_fill[i],points_to_fill[i+1]
             x_u,y_u = uv_barycentre_nb(p1,p2,p3,uv1,uv2,uv3,np.array([x,y]))
-            tampon_SSAA[y,x] = texture[int(x_u),int(y_u)]
+            tampon_SSAA[y,x] = texture[int(x_u*twidth),int(y_u*theight)]
 
     def draw_uv(self,tampon):
-        p1,p2,p3 = self.P2D
-        uv1 = self.P1.uv
-        uv2 = self.P2.uv
-        uv3 = self.P3.uv
-        points_to_fill = tampon.fill_triangle_uv(self)
-        Triangle.draw_uv_nb(tampon.tampon_SSAA,self.texture,points_to_fill,p1,p2,p3,uv1.to_array(),uv2.to_array(),uv3.to_array())
-        
+        if not(self.texture is None):
+            p1,p2,p3 = self.P2D
+            uv1 = self.P1.uv
+            uv2 = self.P2.uv
+            uv3 = self.P3.uv
+            points_to_fill = tampon.fill_triangle_uv(self)
+            Triangle.draw_uv_nb(tampon.tampon_SSAA,self.texture,points_to_fill,p1,p2,p3,uv1.to_array(),uv2.to_array(),uv3.to_array())
+        else:
+            self.draw_tampon_full(tampon)
 
 
     def uv_barycentre(self,p):

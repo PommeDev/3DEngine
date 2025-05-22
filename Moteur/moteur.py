@@ -11,6 +11,7 @@ from Utils.Figure.Vertex import Vertex
 from PIL import Image
 from random import randint
 import Utils.Lights.Ambient as LA
+import Utils.Lights.Spot as Sp
 
 class Moteur:
     #Probleme les x et y sont inversé partout
@@ -33,7 +34,9 @@ class Moteur:
         self.c_l = []
         self.s_l = Shape([])
 
-        self.ambient = LA.Ambient(Vector3D(100,100,0),0.05)
+        self.ambient = LA.Ambient(Vector3D(0,0,0),0.8,c=np.array([255,255,255]))
+        self.spot = Sp.Spot(np.array([100,100,0],dtype=np.float64),np.array([1/np.sqrt(3),1/np.sqrt(3),1/np.sqrt(3)],dtype=np.float64),np.radians(60))
+
 
         #self.C1 = Cube(Vector3D(100,100,0),100)
         #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
@@ -78,7 +81,7 @@ class Moteur:
         self.s_l.to_2D(self.camera,self.orientation_c,e_compute(self.FOV))
 
     def draw_cubes(self):
-            self.s_l.draw_uv(self.tampon,self.camera,self.orientation_c,self.ambient)
+            self.s_l.draw_uv(self.tampon,self.camera,self.orientation_c,self.ambient,self.spot)
 
 
     def move_cam_arrow(self):
@@ -182,8 +185,8 @@ class Moteur:
             #self.S1.draw_tampon(self.tampon,self.camera,self.orientation_c)
             #self.S2.draw_tampon(self.tampon,self.camera,self.orientation_c)
 
-            self.draw_cubes()
-            #self.A.draw_uv(self.tampon,self.ambient)
+            #self.draw_cubes()
+            self.A.draw_uv(self.tampon,self.ambient,self.spot)
             self.tampon.blit(self.window)
 
             p.display.flip()

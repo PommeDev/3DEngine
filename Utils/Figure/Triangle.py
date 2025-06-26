@@ -9,7 +9,7 @@ from Utils.Lights.model import diffuse_light_lambert
 
 class Triangle:
     """Sommets dans l'ordre anti-horraire"""
-    def __init__(self,P1:Vertex,P2:Vertex,P3:Vertex,color=np.array([255,0,0],dtype=np.int16),line_color=np.array([0,255,0])):
+    def __init__(self,P1:Vertex,P2:Vertex,P3:Vertex,color=np.array([255,0,0],dtype=np.int16),line_color=np.array([0,255,0]),texture = None):
         self.P1 = P1
         self.P2 = P2
         self.P3 = P3
@@ -17,7 +17,7 @@ class Triangle:
         self.color = color
         self.line_color = line_color
         self.P2D = [0,0,0]
-        self.texture = None
+        self.texture = texture
 
     def __iter__(self):
         yield self.P1
@@ -145,32 +145,41 @@ class Triangle:
 
     def draw_uv(self,tampon,camera_pos,theta, FOV, ambient, spot, coeff_diffus,k):
         if not(self.texture is None):
-            if self.should_draw_2(camera_pos,theta):
-                p1,p2,p3 = self.P2D
-                uv1 = self.P1.uv
-                uv2 = self.P2.uv
-                uv3 = self.P3.uv
-                points_to_fill = tampon.fill_triangle_uv(self)
-                self.normal = self.normal.astype(np.float32)
-                self.normal /= np.linalg.norm(self.normal)
-                spot_pos_3D = spot.pos
-                L = (((self.P1.pos+self.P2.pos+self.P3.pos)/3.0) - spot_pos_3D)
-                L = L.to_array()
-                L = L.astype(np.float32)
-                L/= np.linalg.norm(L)
-                D = (((self.P1.pos+self.P2.pos+self.P3.pos)/3.0) - camera_pos)
-                D = D.to_array()
-                D = D.astype(np.float32)
-                D/= np.linalg.norm(D)
-                Triangle.draw_uv_nb(
-                    tampon.tampon_SSAA,
-                    self.texture,points_to_fill,
-                    p1,p2,p3,
-                    uv1.to_array(),uv2.to_array(),uv3.to_array(),
-                    ambient.intensity,ambient.color,
-                    spot.color,self.normal,L,coeff_diffus,
-                    D,k
-                )
+            p1,p2,p3 = self.P2D
+            uv1 = self.P1.uv
+            uv2 = self.P2.uv
+            uv3 = self.P3.uv
+            points_to_fill = tampon.fill_triangle_uv(self)
+            self.normal = self.normal.astype(np.float32)
+            norm_N = np.linalg.norm(self.normal)
+            if norm_N < 1e-6:
+                return
+            self.normal /= norm_N
+            spot_pos_3D = spot.pos
+            L = (((self.P1.pos+self.P2.pos+self.P3.pos)/3.0) - spot_pos_3D)
+            L = L.to_array()
+            L = L.astype(np.float32)
+            if np.linalg.norm(L) < 1e-6:
+                return
+            L/= np.linalg.norm(L)
+            
+            
+            D = (((self.P1.pos+self.P2.pos+self.P3.pos)/3.0) - camera_pos)
+            D = D.to_array()
+            D = D.astype(np.float32)
+            if np.linalg.norm(D) < 1e-6:
+                return
+            D/= np.linalg.norm(D)
+
+            Triangle.draw_uv_nb(
+                tampon.tampon_SSAA,
+                self.texture,points_to_fill,
+                p1,p2,p3,
+                uv1.to_array(),uv2.to_array(),uv3.to_array(),
+                ambient.intensity,ambient.color,
+                spot.color,self.normal,L,coeff_diffus,
+                D,k
+            )
         else:
             self.draw_tampon_full(tampon)
 

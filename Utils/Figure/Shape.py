@@ -2,7 +2,7 @@ from Utils.Figure.Triangle import Triangle
 from Utils.Image.Perspective import *
 
 class Shape:
-    def __init__(self, list_triangle,coeff_diffus=1,coeff_speculaire=100)):
+    def __init__(self, list_triangle,coeff_diffus=1,coeff_speculaire=100):
         self.triangles = list_triangle
 
         self.zorder = {}

@@ -55,9 +55,21 @@ class Moteur:
         self.A = Triangle(Vertex(Vector3D(200,100,10),Vector2D(0,0)),Vertex(Vector3D(300,100,10),Vector2D(32/32,0)),Vertex(Vector3D(300,200,110),Vector2D(32/32,32/32)))
         self.A.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
         self.A.texture = imageData
+        self.B = Triangle(Vertex(Vector3D(200,100,10),Vector2D(0,0)),Vertex(Vector3D(300,100,10),Vector2D(32/32,0)),Vertex(Vector3D(100,300,110),Vector2D(32/32,32/32)))
+        self.B.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
+        self.B.texture = imageData
+        
+
 
         self.ambient = LA.Ambient()
         self.spot = Sp.Spot(Vector3D(100,100,200))
+
+        #self.shape_test = Shape([self.A,self.B])
+        self.sphere:Shape = generate_sphere_triangles(200,100,0,100,imageData)
+
+        print(self.sphere.triangles)
+
+        self.list_shapes = [self.sphere]
 
     def generate_cubes(self,file):
         pos,u = read(file)
@@ -83,6 +95,18 @@ class Moteur:
     def draw_cubes(self,coeff_diffus,k):
             self.s_l.draw_uv(self.tampon,self.camera,self.orientation_c,self.FOV,self.ambient,self.spot)
 
+    def update_shapes(self):
+        for i in self.list_shapes:
+            #i.updateZorder()
+            i.to_2D(self.camera,self.orientation_c,e_compute(self.FOV))
+        #if self.A.should_draw_2(self.camera,self.orientation_c):
+        #    self.A.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
+        
+
+    def draw_shapes(self):
+        for i in self.list_shapes:
+            i.draw_uv(self.tampon,self.camera,self.orientation_c,self.FOV,self.ambient,self.spot)
+        #self.A.draw_uv(self.tampon,self.camera,self.orientation_c,e_compute(self.FOV),self.ambient,self.spot,1,100)
 
     def move_cam_arrow(self):
         #Les positions des x et y sont inversé pour la caméra
@@ -138,8 +162,16 @@ class Moteur:
         scroll_speed = 400
         self.generate_cubes("TestMyEngine.obj")
         self.update_cubes()
-        
-        self.A.should_draw_2(self.camera,self.orientation_c)
+        for i in self.list_shapes:
+            i.updateZorder()
+        #self.A.should_draw_2(self.camera,self.orientation_c)
+        self.update_shapes()
+        self.draw_shapes()
+        self.window.fill((0,0,0))
+        self.update_shapes()
+        self.draw_shapes()
+        self.tampon.blit(self.window)
+                
 
         while is_running:
             for event in p.event.get():
@@ -157,26 +189,36 @@ class Moteur:
             if not(is_running):
                 break
             
-            self.window.fill((0,0,0))
+            
 
             if not(self.old_cam_pos == self.camera):
                 #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
-                self.update_cubes()
-                self.A.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
-                self.A.should_draw_2(self.camera,self.orientation_c)
+                #self.update_cubes()
+                #self.A.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
+                #self.A.should_draw_2(self.camera,self.orientation_c)
+                self.window.fill((0,0,0))
+                self.update_shapes()
+                self.draw_shapes()
+                self.tampon.blit(self.window)
+                
 
             if not(self.old_cam_angle == self.orientation_c):
                 #self.C1.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.C2.compute_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.S1.to_2D(self.camera,self.orientation_c,e(self.FOV))
                 #self.S2.to_2D(self.camera,self.orientation_c,e(self.FOV))
-                self.update_cubes()
-                self.A.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
-                self.A.should_draw_2(self.camera,self.orientation_c)
-            
+                #self.update_cubes()
+                #self.A.compute_2D(self.camera,self.orientation_c,e_compute(self.FOV))
+                #self.A.should_draw_2(self.camera,self.orientation_c)
+                self.window.fill((0,0,0))
+                self.update_shapes()
+                self.draw_shapes()
+                self.tampon.blit(self.window)
+                
+
             self.scroll_dir = 0
 
             #self.C2.draw_empty(self.window)
@@ -186,10 +228,65 @@ class Moteur:
             #self.S2.draw_tampon(self.tampon,self.camera,self.orientation_c)
 
             #self.draw_cubes()
-            self.A.draw_uv(self.tampon,self.camera,self.orientation_c,self.FOV,self.ambient,self.spot,1,100)
-            self.tampon.blit(self.window)
+            #self.A.draw_uv(self.tampon,self.camera,self.orientation_c,self.FOV,self.ambient,self.spot,1,100)
+            #self.tampon.blit(self.window)
+            
+            
+
 
             p.display.flip()
             p.time.Clock().tick(60)
             
         p.quit()
+
+
+import math
+
+def generate_sphere_triangles(cx, cy, cz, r, text, n_lat=10, n_lon=20):
+    vertices = [[None for _ in range(n_lon)] for _ in range(n_lat + 1)]
+    triangles = []
+
+    # Générer les sommets
+    for i in range(n_lat + 1):
+        theta = math.pi * i / n_lat  # de 0 (pôle nord) à pi (pôle sud)
+        for j in range(n_lon):
+            phi = 2 * math.pi * j / n_lon  # de 0 à 2pi
+
+            x = cx + r * math.sin(theta) * math.cos(phi)
+            y = cy + r * math.sin(theta) * math.sin(phi)
+            z = cz + r * math.cos(theta)
+
+            # Coordonnées UV approximatives pour mapping sphérique
+            u = j / n_lon
+            v = i / n_lat
+            uv = Vector2D(u, v)
+            pos = Vector3D(x, y, z)
+            vertices[i][j] = Vertex(pos, uv)
+
+    # Générer les triangles
+    for i in range(n_lat):
+        for j in range(n_lon):
+            p1 = vertices[i][j]
+            p2 = vertices[i + 1][j]
+            p3 = vertices[i][(j + 1) % n_lon]
+            p4 = vertices[i + 1][(j + 1) % n_lon]
+
+            # Triangle 1
+            if not are_degenerate(p1, p2, p3):
+                triangles.append(Triangle(p1, p2, p3, texture=text))
+
+            # Triangle 2
+            if not are_degenerate(p3, p2, p4):
+                triangles.append(Triangle(p3, p2, p4, texture=text))
+
+    return Shape(triangles)
+
+def are_degenerate(v1, v2, v3):
+    a = v1.pos.to_array()
+    b = v2.pos.to_array()
+    c = v3.pos.to_array()
+    ab = b - a
+    ac = c - a
+    cross = np.cross(ab, ac)
+    area = np.linalg.norm(cross) * 0.5
+    return area < 1e-5  # seuil pour considérer le triangle comme "plat"

@@ -2,13 +2,14 @@ from Utils.Figure.Triangle import Triangle
 from Utils.Image.Perspective import *
 
 class Shape:
-    def __init__(self, list_triangle):
+    def __init__(self, list_triangle,coeff_diffus=1,coeff_speculaire=100)):
         self.triangles = list_triangle
 
         self.zorder = {}
         self.k = self.zorder.keys()
         self.k = sorted(self.k,reverse=True)
-    
+        self.coeff_diffus = coeff_diffus
+        self.coeff_speculaire = coeff_speculaire
 
     def updateZorder(self):
         j = 0
@@ -52,11 +53,11 @@ class Shape:
                     t.draw_tampon_border(tampon)
 
 
-    def draw_uv(self,tampon,camera,theta,ambient):
+    def draw_uv(self,tampon,camera_pos,theta,FOV,ambient,spot):
         for i in self.k:
             for l in self.zorder[i]:
-                t = self.triangles[l]
-                if t.should_draw_2(camera,theta):
-                    t.draw_uv(tampon,ambient)
+                t:Triangle = self.triangles[l]
+                if t.should_draw_2(camera_pos,theta):
+                    t.draw_uv(tampon,camera_pos,theta,FOV,ambient,spot,self.coeff_diffus,self.coeff_speculaire)
                     
 

@@ -8,8 +8,8 @@ class Tampon:
         self.height = size[1]
         self.indice = indice
 
-        self.tampon = np.zeros((size[0],size[1],3),dtype=np.uint8)
-        self.tampon_SSAA = np.zeros((size[0]*2,size[1]*2,3),dtype=np.uint8)
+        self.tampon = np.zeros((size[0],size[1],3),dtype=np.int16)
+        self.tampon_SSAA = np.zeros((size[0]*2,size[1]*2,3),dtype=np.int16)
 
 
     def __len__(self):
@@ -19,7 +19,7 @@ class Tampon:
     @nb.njit(parallel=True)
     def downsample_ssaa(src):
         h, w = src.shape[0] // 2, src.shape[1] // 2
-        dst = np.empty((h, w, 3), dtype=np.uint8)
+        dst = np.empty((h, w, 3), dtype=np.int16)
         for i in nb.prange(h):
             for j in range(w):
                 for k in range(3):
@@ -168,7 +168,7 @@ class Tampon:
 
     def blit(self,window):
         self.SSAA()
-        surface = p.surfarray.make_surface(self.tampon)
+        surface = p.surfarray.make_surface((self.tampon))
         window.blit(surface, (0, 0))
         self.tampon_SSAA.fill(0)
         return self.indice

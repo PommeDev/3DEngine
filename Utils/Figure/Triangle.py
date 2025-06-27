@@ -192,8 +192,12 @@ class Triangle:
         x2,y2 = p2[0],p2[1]
         x3,y3 = p3[0],p3[1]
         denom = (y2-y3)*(x1-x3)+(x3-x2)*(y1-y3)
-        alpha = ((y2-y3)*(x-x3)+(x3-x2)*(y-y3))/denom
-        beta = ((y3-y1)*(x-x3)+(x1-x3)*(y-y3))/denom
+        if denom != 0:
+            alpha = ((y2-y3)*(x-x3)+(x3-x2)*(y-y3))/denom
+            beta = ((y3-y1)*(x-x3)+(x1-x3)*(y-y3))/denom
+        else:
+            print("denom is null")
+            alpha = beta = 0
         gamma = 1-alpha-beta
         uvp = alpha*uv1+beta*uv2+gamma*uv3
         return uvp
